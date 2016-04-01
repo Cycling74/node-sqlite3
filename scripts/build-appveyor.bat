@@ -73,6 +73,12 @@ IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 :NODE_INSTALLED
 
+CALL npm install -g npm-windows-upgrade
+IF %ERRORLEVEL% NEQ 0 GOTO ERROR
+
+CALL npm-windows-upgrade --no-prompt --npm-version latest
+IF %ERRORLEVEL% NEQ 0 GOTO ERROR
+
 ECHO available node.exe^:
 call where node
 ECHO available npm^:
