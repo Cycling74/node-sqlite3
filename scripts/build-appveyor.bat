@@ -82,7 +82,7 @@ ECHO Set-ExecutionPolicy && powershell Set-ExecutionPolicy Unrestricted -Scope C
 IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 ECHO installing npm-windows-upgrade && CALL npm install -g npm-windows-upgrade
 IF %ERRORLEVEL% NEQ 0 GOTO ERROR
-ECHO installing latest npm && CALL npm-windows-upgrade --no-prompt --npm-version latest
+ECHO installing latest npm && CALL npm-windows-upgrade --no-prompt --npm-version 3.8.6
 IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 ECHO available node.exe^:
