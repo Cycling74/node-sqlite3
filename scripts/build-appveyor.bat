@@ -34,7 +34,7 @@ ECHO downloading/installing node
 ::IF /I "%APPVEYOR%"=="True" IF /I "%msvs_toolset%"=="12" powershell Install-Product node $env:nodejs_version $env:Platform
 ::TESTING:
 ::always install (get npm matching node), but delete installed programfiles node.exe afterwards for VS2015 (using custom node.exe)
-IF /I "%APPVEYOR%"=="True" GOTO APPVEYOR_INSTALL
+IF /I "%APPVEYOR%"=="True" ECHO on AppVeyor && GOTO APPVEYOR_INSTALL
 GOTO SKIP_APPVEYOR_INSTALL
 
 :APPVEYOR_INSTALL
@@ -73,10 +73,16 @@ IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 :NODE_INSTALLED
 
-CALL npm install -g npm-windows-upgrade
+IF EXIST %appdata%\npm ECHO deleting %appdata%\npm && RD /S /Q %appdata%\npm
+IF %ERRORLEVEL% NEQ 0 GOTO ERROR
+IF EXIST %appdata%\npm-cache ECHO deleting %appdata%\npm-cache && RD /S /Q %appdata%\npm-cache
 IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
-CALL npm-windows-upgrade --no-prompt --npm-version latest
+ECHO Set-ExecutionPolicy && powershell Set-ExecutionPolicy Unrestricted -Scope CurrentUser -Force
+IF %ERRORLEVEL% NEQ 0 GOTO ERROR
+ECHO installing npm-windows-upgrade && CALL npm install -g npm-windows-upgrade
+IF %ERRORLEVEL% NEQ 0 GOTO ERROR
+ECHO installing latest npm && CALL npm-windows-upgrade --no-prompt --npm-version latest
 IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 ECHO available node.exe^:
