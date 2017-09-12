@@ -41,6 +41,7 @@ before_install:
 - export CC=clang
 - export PATH=$(pwd)/mason_packages/.link/bin:$PATH
 - scripts/validate_tag.sh
+- export CXXFLAGS="-include $(pwd)/src/gcc-preinclude.h"
 - source ./scripts/install_node.sh ${NODE_VERSION}
 
 install:
