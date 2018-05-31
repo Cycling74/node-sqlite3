@@ -8,11 +8,11 @@
     "url": "https://mapbox.com/"
   },
   "binary": {
-    "module_name": "node_sqlite3",
-    "module_path": "./lib/binding/{node_abi}-{platform}-{arch}",
-    "host": "https://mapbox-node-binary.s3.amazonaws.com",
-    "remote_path": "./{name}/v{version}/{toolset}/",
-    "package_name": "{node_abi}-{platform}-{arch}.tar.gz"
+    "module_name": "sqlite3",
+    "module_path": "./lib/binding/{platform}-{arch}",
+    "host": "https://cycling74-node-prebuilt.s3.amazonaws.com",
+    "remote_path": "./{name}/v{version}/",
+    "package_name": "{platform}-{arch}.tar.gz"
   },
   "contributors": [
     "Konstantin Käfer <mail@kkaefer.com>",
@@ -40,15 +40,14 @@
     "nan": "~2.9.2",
     "node-pre-gyp": "~0.9.0"
   },
-  "bundledDependencies": [
-    "node-pre-gyp"
-  ],
   "devDependencies": {
     "aws-sdk": "2.x",
+    "dotenv-cli": "^1.4.0",
     "eslint": "3.5.0",
     "mocha": "3.x"
   },
   "scripts": {
+    "build": "dotenv sh ./scripts/c74_build.sh",
     "prepublishOnly": "npm ls",
     "install": "node-pre-gyp install --fallback-to-build",
     "pretest": "node test/support/createdb.js",

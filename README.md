@@ -1,3 +1,16 @@
+## C74 README ADDITIONS
+
+This is a mirror/fork of the node-sqlite3 project/repo in order to allow Cycling '74 to have a custom version for it to be easier bundled with Max (8). This way
+projects like the new search can rely on a stable API with pre-built binaries. In detail for this project this includes:
+
+* Building SQLite3 with SQLITE_ENABLE_FTS3_PARENTHESIS for more advanced FTS Search Query Support
+* ensured Node Version compatability with N4M
+* self-hosted pre-build binaries on our S3 via node-pre-gyp
+
+Additionally we gain a stable file/build location in order to make bundling and reducing file size for contained projects simpler and more straightforward.
+
+## SQLITE3 DOCUMENTATION
+
 Asynchronous, non-blocking [SQLite3](http://sqlite.org/) bindings for [Node.js](http://nodejs.org/).
 
 [![NPM](https://nodei.co/npm/sqlite3.png?downloads=true&downloadRank=true)](https://nodei.co/npm/sqlite3/)

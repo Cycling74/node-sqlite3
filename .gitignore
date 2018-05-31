@@ -22,6 +22,7 @@ test/nw/app.nw
 .idea
 .dtps
 local.env
+.env
 .mason
 .eslintrc.js
 setup.sh
