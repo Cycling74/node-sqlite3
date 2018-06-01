@@ -9,10 +9,10 @@
   },
   "binary": {
     "module_name": "sqlite3",
-    "module_path": "./lib/binding/{platform}-{arch}",
+    "module_path": "./lib/binding/{node_abi}-{platform}-{arch}",
     "host": "https://cycling74-node-prebuilt.s3.amazonaws.com",
     "remote_path": "./{name}/v{version}/",
-    "package_name": "{platform}-{arch}.tar.gz"
+    "package_name": "{node_abi}-{platform}-{arch}.tar.gz"
   },
   "contributors": [
     "Konstantin Käfer <mail@kkaefer.com>",
