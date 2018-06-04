@@ -10,6 +10,78 @@
 
 using namespace node_sqlite3;
 
+static void simple_rank(sqlite3_context *pCtx, int nVal, sqlite3_value **apVal)
+{
+
+    unsigned int *aMatchinfo; /* Return value of matchinfo() */
+    int nCol;                 /* Number of columns in the table */
+    int nPhrase;              /* Number of phrases in the query */
+    int iPhrase;              /* Current phrase */
+    double score = 0.0;       /* Value to return */
+    double defaultWeight = 1.0;
+
+    assert(sizeof(int) == 4);
+
+    /* Check that the number of arguments passed to this function is correct.
+	** If not, jump to wrong_number_args. Set aMatchinfo to point to the array
+	** of unsigned integer values returned by FTS function matchinfo. Set
+	** nPhrase to contain the number of reportable phrases in the users full-text
+	** query, and nCol to the number of columns in the table.
+	*/
+    aMatchinfo = (unsigned int *)sqlite3_value_blob(apVal[0]);
+    nPhrase = aMatchinfo[0];
+    nCol = aMatchinfo[1];
+    if ((nVal - 1) > nCol)
+        goto wrong_number_args;
+
+    /* Iterate through each phrase in the users query. */
+    for (iPhrase = 0; iPhrase < nPhrase; iPhrase++)
+    {
+        int iCol; /* Current column */
+
+    /* Now iterate through each column in the users query. For each column,
+	** increment the relevancy score by:
+	**
+	** (<hit count> / <global hit count>) * <column weight>
+	**
+	** aPhraseinfo[] points to the start of the data for phrase iPhrase. So
+	** the hit count and global hit counts for each column are found in
+	** aPhraseinfo[iCol*3] and aPhraseinfo[iCol*3+1], respectively.
+	*/
+        unsigned int *aPhraseinfo = &aMatchinfo[2 + iPhrase * nCol * 3];
+        for (iCol = 0; iCol < nCol; iCol++)
+        {
+            int nHitCount = aPhraseinfo[3 * iCol];
+            int nGlobalHitCount = aPhraseinfo[3 * iCol + 1];
+            double weight = defaultWeight;
+            if ((1 + iCol) < nVal)
+                weight = sqlite3_value_double(apVal[1 + iCol]);
+            if (nHitCount > 0)
+            {
+                score += ((double)nHitCount / (double)nGlobalHitCount) * weight;
+            }
+        }
+    }
+
+    sqlite3_result_double(pCtx, score);
+    return;
+
+    /* Jump here if the wrong number of arguments are passed to this function */
+wrong_number_args:
+    sqlite3_result_error(pCtx, "wrong number of arguments to function rank()", -1);
+}
+
+static int register_c74_extensions(
+    sqlite3 *db,
+    char **pzErrMsg,
+    const sqlite3_api_routines *pThunk)
+{
+
+    sqlite3_create_function(db, "simple_rank", -1, SQLITE_ANY, 0, simple_rank, 0, 0);
+
+    return SQLITE_OK;
+}
+
 namespace {
 
 NAN_MODULE_INIT(RegisterModule) {
@@ -54,6 +126,8 @@ NAN_MODULE_INIT(RegisterModule) {
     DEFINE_CONSTANT_INTEGER(target, SQLITE_FORMAT, FORMAT);
     DEFINE_CONSTANT_INTEGER(target, SQLITE_RANGE, RANGE);
     DEFINE_CONSTANT_INTEGER(target, SQLITE_NOTADB, NOTADB);
+
+    sqlite3_auto_extension((void (*)(void))register_c74_extensions);
 }
 
 }
