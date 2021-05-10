@@ -1,5 +1,5 @@
 {
-  "name": "sqlite3",
+  "name": "@cycling/sqlite3",
   "description": "Asynchronous, non-blocking SQLite3 bindings",
   "version": "5.0.2",
   "homepage": "https://github.com/mapbox/node-sqlite3",
@@ -11,7 +11,7 @@
     "module_name": "node_sqlite3",
     "module_path": "./lib/binding/napi-v{napi_build_version}-{platform}-{arch}",
     "host": "https://cycling74-node-prebuilt.s3.amazonaws.com",
-    "remote_path": "./{name}/v{version}/{toolset}/",
+    "remote_path": "./sqlite3/v{version}/{toolset}/",
     "package_name": "napi-v{napi_build_version}-{platform}-{arch}.tar.gz",
     "napi_versions": [
       3
