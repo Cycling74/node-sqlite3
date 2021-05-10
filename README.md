@@ -6,6 +6,7 @@ projects like the new search can rely on a stable API with pre-built binaries. I
 * Building SQLite3 with SQLITE_ENABLE_FTS3_PARENTHESIS for more advanced FTS Search Query Support
 * ensured Node Version compatability with N4M
 * self-hosted pre-build binaries on our S3 via node-pre-gyp
+* Private registry publishing to npm.cycling74.com
 
 Additionally we gain a stable file/build location in order to make bundling and reducing file size for contained projects simpler and more straightforward.
 
