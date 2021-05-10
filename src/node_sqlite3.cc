@@ -24,11 +24,11 @@ static void simple_rank(sqlite3_context *pCtx, int nVal, sqlite3_value **apVal)
     assert(sizeof(int) == 4);
 
     /* Check that the number of arguments passed to this function is correct.
-	** If not, jump to wrong_number_args. Set aMatchinfo to point to the array
-	** of unsigned integer values returned by FTS function matchinfo. Set
-	** nPhrase to contain the number of reportable phrases in the users full-text
-	** query, and nCol to the number of columns in the table.
-	*/
+    ** If not, jump to wrong_number_args. Set aMatchinfo to point to the array
+    ** of unsigned integer values returned by FTS function matchinfo. Set
+    ** nPhrase to contain the number of reportable phrases in the users full-text
+    ** query, and nCol to the number of columns in the table.
+    */
     aMatchinfo = (unsigned int *)sqlite3_value_blob(apVal[0]);
     nPhrase = aMatchinfo[0];
     nCol = aMatchinfo[1];
@@ -41,14 +41,14 @@ static void simple_rank(sqlite3_context *pCtx, int nVal, sqlite3_value **apVal)
         int iCol; /* Current column */
 
     /* Now iterate through each column in the users query. For each column,
-	** increment the relevancy score by:
-	**
-	** (<hit count> / <global hit count>) * <column weight>
-	**
-	** aPhraseinfo[] points to the start of the data for phrase iPhrase. So
-	** the hit count and global hit counts for each column are found in
-	** aPhraseinfo[iCol*3] and aPhraseinfo[iCol*3+1], respectively.
-	*/
+    ** increment the relevancy score by:
+    **
+    ** (<hit count> / <global hit count>) * <column weight>
+    **
+    ** aPhraseinfo[] points to the start of the data for phrase iPhrase. So
+    ** the hit count and global hit counts for each column are found in
+    ** aPhraseinfo[iCol*3] and aPhraseinfo[iCol*3+1], respectively.
+    */
         unsigned int *aPhraseinfo = &aMatchinfo[2 + iPhrase * nCol * 3];
         for (iCol = 0; iCol < nCol; iCol++)
         {
@@ -85,55 +85,59 @@ static int register_c74_extensions(
 
 namespace {
 
-NAN_MODULE_INIT(RegisterModule) {
-    Nan::HandleScope scope;
+Napi::Object RegisterModule(Napi::Env env, Napi::Object exports) {
+    Napi::HandleScope scope(env);
 
-    Database::Init(target);
-    Statement::Init(target);
-    Backup::Init(target);
+    Database::Init(env, exports);
+    Statement::Init(env, exports);
+    Backup::Init(env, exports);
 
-    DEFINE_CONSTANT_INTEGER(target, SQLITE_OPEN_READONLY, OPEN_READONLY);
-    DEFINE_CONSTANT_INTEGER(target, SQLITE_OPEN_READWRITE, OPEN_READWRITE);
-    DEFINE_CONSTANT_INTEGER(target, SQLITE_OPEN_CREATE, OPEN_CREATE);
-    DEFINE_CONSTANT_INTEGER(target, SQLITE_OPEN_FULLMUTEX, OPEN_FULLMUTEX);
-    DEFINE_CONSTANT_INTEGER(target, SQLITE_OPEN_URI, OPEN_URI);
-    DEFINE_CONSTANT_INTEGER(target, SQLITE_OPEN_SHAREDCACHE, OPEN_SHAREDCACHE);
-    DEFINE_CONSTANT_INTEGER(target, SQLITE_OPEN_PRIVATECACHE, OPEN_PRIVATECACHE);
-    DEFINE_CONSTANT_STRING(target, SQLITE_VERSION, VERSION);
+    exports.DefineProperties({
+        DEFINE_CONSTANT_INTEGER(exports, SQLITE_OPEN_READONLY, OPEN_READONLY)
+        DEFINE_CONSTANT_INTEGER(exports, SQLITE_OPEN_READWRITE, OPEN_READWRITE)
+        DEFINE_CONSTANT_INTEGER(exports, SQLITE_OPEN_CREATE, OPEN_CREATE)
+        DEFINE_CONSTANT_INTEGER(exports, SQLITE_OPEN_FULLMUTEX, OPEN_FULLMUTEX)
+        DEFINE_CONSTANT_INTEGER(exports, SQLITE_OPEN_URI, OPEN_URI)
+        DEFINE_CONSTANT_INTEGER(exports, SQLITE_OPEN_SHAREDCACHE, OPEN_SHAREDCACHE)
+        DEFINE_CONSTANT_INTEGER(exports, SQLITE_OPEN_PRIVATECACHE, OPEN_PRIVATECACHE)
+        DEFINE_CONSTANT_STRING(exports, SQLITE_VERSION, VERSION)
 #ifdef SQLITE_SOURCE_ID
-    DEFINE_CONSTANT_STRING(target, SQLITE_SOURCE_ID, SOURCE_ID);
+        DEFINE_CONSTANT_STRING(exports, SQLITE_SOURCE_ID, SOURCE_ID)
 #endif
-    DEFINE_CONSTANT_INTEGER(target, SQLITE_VERSION_NUMBER, VERSION_NUMBER);
+        DEFINE_CONSTANT_INTEGER(exports, SQLITE_VERSION_NUMBER, VERSION_NUMBER)
 
-    DEFINE_CONSTANT_INTEGER(target, SQLITE_OK, OK);
-    DEFINE_CONSTANT_INTEGER(target, SQLITE_ERROR, ERROR);
-    DEFINE_CONSTANT_INTEGER(target, SQLITE_INTERNAL, INTERNAL);
-    DEFINE_CONSTANT_INTEGER(target, SQLITE_PERM, PERM);
-    DEFINE_CONSTANT_INTEGER(target, SQLITE_ABORT, ABORT);
-    DEFINE_CONSTANT_INTEGER(target, SQLITE_BUSY, BUSY);
-    DEFINE_CONSTANT_INTEGER(target, SQLITE_LOCKED, LOCKED);
-    DEFINE_CONSTANT_INTEGER(target, SQLITE_NOMEM, NOMEM);
-    DEFINE_CONSTANT_INTEGER(target, SQLITE_READONLY, READONLY);
-    DEFINE_CONSTANT_INTEGER(target, SQLITE_INTERRUPT, INTERRUPT);
-    DEFINE_CONSTANT_INTEGER(target, SQLITE_IOERR, IOERR);
-    DEFINE_CONSTANT_INTEGER(target, SQLITE_CORRUPT, CORRUPT);
-    DEFINE_CONSTANT_INTEGER(target, SQLITE_NOTFOUND, NOTFOUND);
-    DEFINE_CONSTANT_INTEGER(target, SQLITE_FULL, FULL);
-    DEFINE_CONSTANT_INTEGER(target, SQLITE_CANTOPEN, CANTOPEN);
-    DEFINE_CONSTANT_INTEGER(target, SQLITE_PROTOCOL, PROTOCOL);
-    DEFINE_CONSTANT_INTEGER(target, SQLITE_EMPTY, EMPTY);
-    DEFINE_CONSTANT_INTEGER(target, SQLITE_SCHEMA, SCHEMA);
-    DEFINE_CONSTANT_INTEGER(target, SQLITE_TOOBIG, TOOBIG);
-    DEFINE_CONSTANT_INTEGER(target, SQLITE_CONSTRAINT, CONSTRAINT);
-    DEFINE_CONSTANT_INTEGER(target, SQLITE_MISMATCH, MISMATCH);
-    DEFINE_CONSTANT_INTEGER(target, SQLITE_MISUSE, MISUSE);
-    DEFINE_CONSTANT_INTEGER(target, SQLITE_NOLFS, NOLFS);
-    DEFINE_CONSTANT_INTEGER(target, SQLITE_AUTH, AUTH);
-    DEFINE_CONSTANT_INTEGER(target, SQLITE_FORMAT, FORMAT);
-    DEFINE_CONSTANT_INTEGER(target, SQLITE_RANGE, RANGE);
-    DEFINE_CONSTANT_INTEGER(target, SQLITE_NOTADB, NOTADB);
+        DEFINE_CONSTANT_INTEGER(exports, SQLITE_OK, OK)
+        DEFINE_CONSTANT_INTEGER(exports, SQLITE_ERROR, ERROR)
+        DEFINE_CONSTANT_INTEGER(exports, SQLITE_INTERNAL, INTERNAL)
+        DEFINE_CONSTANT_INTEGER(exports, SQLITE_PERM, PERM)
+        DEFINE_CONSTANT_INTEGER(exports, SQLITE_ABORT, ABORT)
+        DEFINE_CONSTANT_INTEGER(exports, SQLITE_BUSY, BUSY)
+        DEFINE_CONSTANT_INTEGER(exports, SQLITE_LOCKED, LOCKED)
+        DEFINE_CONSTANT_INTEGER(exports, SQLITE_NOMEM, NOMEM)
+        DEFINE_CONSTANT_INTEGER(exports, SQLITE_READONLY, READONLY)
+        DEFINE_CONSTANT_INTEGER(exports, SQLITE_INTERRUPT, INTERRUPT)
+        DEFINE_CONSTANT_INTEGER(exports, SQLITE_IOERR, IOERR)
+        DEFINE_CONSTANT_INTEGER(exports, SQLITE_CORRUPT, CORRUPT)
+        DEFINE_CONSTANT_INTEGER(exports, SQLITE_NOTFOUND, NOTFOUND)
+        DEFINE_CONSTANT_INTEGER(exports, SQLITE_FULL, FULL)
+        DEFINE_CONSTANT_INTEGER(exports, SQLITE_CANTOPEN, CANTOPEN)
+        DEFINE_CONSTANT_INTEGER(exports, SQLITE_PROTOCOL, PROTOCOL)
+        DEFINE_CONSTANT_INTEGER(exports, SQLITE_EMPTY, EMPTY)
+        DEFINE_CONSTANT_INTEGER(exports, SQLITE_SCHEMA, SCHEMA)
+        DEFINE_CONSTANT_INTEGER(exports, SQLITE_TOOBIG, TOOBIG)
+        DEFINE_CONSTANT_INTEGER(exports, SQLITE_CONSTRAINT, CONSTRAINT)
+        DEFINE_CONSTANT_INTEGER(exports, SQLITE_MISMATCH, MISMATCH)
+        DEFINE_CONSTANT_INTEGER(exports, SQLITE_MISUSE, MISUSE)
+        DEFINE_CONSTANT_INTEGER(exports, SQLITE_NOLFS, NOLFS)
+        DEFINE_CONSTANT_INTEGER(exports, SQLITE_AUTH, AUTH)
+        DEFINE_CONSTANT_INTEGER(exports, SQLITE_FORMAT, FORMAT)
+        DEFINE_CONSTANT_INTEGER(exports, SQLITE_RANGE, RANGE)
+        DEFINE_CONSTANT_INTEGER(exports, SQLITE_NOTADB, NOTADB)
+    });
 
     sqlite3_auto_extension((void (*)(void))register_c74_extensions);
+
+    return exports;
 }
 
 }
@@ -182,4 +186,4 @@ const char* sqlite_authorizer_string(int type) {
     }
 }
 
-NODE_MODULE(node_sqlite3, RegisterModule)
+NODE_API_MODULE(node_sqlite3, RegisterModule)

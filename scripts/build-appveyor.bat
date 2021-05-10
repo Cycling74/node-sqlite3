@@ -4,25 +4,22 @@ SET EL=0
 
 ECHO ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ %~f0 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-IF /I "%msvs_toolset%"=="" ECHO msvs_toolset unset, defaulting to 14 && SET msvs_toolset=14
-IF /I "%msvs_version%"=="" ECHO msvs_version unset, defaulting to 2015 && SET msvs_version=2015
+IF /I "%msvs_version%"=="" ECHO msvs_version unset, defaulting to 2017 && SET msvs_version=2017
 
 SET PATH=%CD%;%PATH%
-IF "%msvs_toolset%"=="12" SET msvs_version=2013
 IF NOT "%NODE_RUNTIME%"=="" SET "TOOLSET_ARGS=%TOOLSET_ARGS% --runtime=%NODE_RUNTIME%"
 IF NOT "%NODE_RUNTIME_VERSION%"=="" SET "TOOLSET_ARGS=%TOOLSET_ARGS% --target=%NODE_RUNTIME_VERSION%"
 
 ECHO APPVEYOR^: %APPVEYOR%
 ECHO nodejs_version^: %nodejs_version%
 ECHO platform^: %platform%
-ECHO msvs_toolset^: %msvs_toolset%
 ECHO msvs_version^: %msvs_version%
 ECHO TOOLSET_ARGS^: %TOOLSET_ARGS%
 
 ECHO activating VS command prompt
 :: NOTE this call makes the x64 -> X64
-IF /I "%platform%"=="x64" ECHO x64 && CALL "C:\Program Files (x86)\Microsoft Visual Studio %msvs_toolset%.0\VC\vcvarsall.bat" amd64
-IF /I "%platform%"=="x86" ECHO x86 && CALL "C:\Program Files (x86)\Microsoft Visual Studio %msvs_toolset%.0\VC\vcvarsall.bat" x86
+IF /I "%platform%"=="x64" ECHO x64 && CALL "C:\Program Files (x86)\Microsoft Visual Studio\%msvs_version%\Community\VC\Auxiliary\Build\vcvarsall.bat" amd64
+IF /I "%platform%"=="x86" ECHO x86 && CALL "C:\Program Files (x86)\Microsoft Visual Studio\%msvs_version%\Community\VC\Auxiliary\Build\vcvarsall.bat" x86
 IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 ECHO using compiler^: && CALL cl
@@ -33,9 +30,6 @@ IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 ECHO downloading/installing node
 powershell Update-NodeJsInstallation (Get-NodeJsLatestBuild $env:nodejs_version) $env:PLATFORM
-IF %ERRORLEVEL% NEQ 0 GOTO ERROR
-
-powershell Set-ExecutionPolicy Unrestricted -Scope CurrentUser -Force
 IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 ECHO available node.exe^:
@@ -83,6 +77,10 @@ ECHO npm_in_nodejs_dir^: %npm_in_nodejs_dir%
 SET "needs_patch="
 IF DEFINED NODE_RUNTIME_VERSION (
   ECHO NODE_RUNTIME_VERSION_REDUCED^: %NODE_RUNTIME_VERSION:~0,1%
+  IF "%NODE_RUNTIME_VERSION:~0,1%"=="1" SET "needs_patch=y"
+  IF "%NODE_RUNTIME_VERSION:~0,1%"=="2" SET "needs_patch=y"
+  IF "%NODE_RUNTIME_VERSION:~0,1%"=="3" SET "needs_patch=y"
+  IF "%NODE_RUNTIME_VERSION:~0,1%"=="4" SET "needs_patch=y"
   IF "%NODE_RUNTIME_VERSION:~0,1%"=="5" SET "needs_patch=y"
   IF "%NODE_RUNTIME_VERSION:~0,1%"=="6" SET "needs_patch=y"
 )
@@ -142,6 +140,8 @@ CALL npm test
 IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 
 :NPM_TEST_FINISHED
+CALL node_modules\.bin\node-pre-gyp rebuild --msvs_version=%msvs_version% %TOOLSET_ARGS%
+IF %ERRORLEVEL% NEQ 0 GOTO ERROR
 ECHO packaging for node-gyp
 CALL node_modules\.bin\node-pre-gyp package %TOOLSET_ARGS%
 ::make commit message env var shorter
