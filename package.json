@@ -1,5 +1,5 @@
 {
-  "name": "@cycling/sqlite3",
+  "name": "@cycling74/sqlite3",
   "description": "Asynchronous, non-blocking SQLite3 bindings",
   "version": "5.0.2",
   "homepage": "https://github.com/mapbox/node-sqlite3",
