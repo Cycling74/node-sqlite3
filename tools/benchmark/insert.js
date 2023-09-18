@@ -1,4 +1,4 @@
-var sqlite3 = require('../lib/sqlite3');
+var sqlite3 = require('../../lib/sqlite3');
 var fs = require('fs');
 
 var iterations = 10000;
@@ -8,7 +8,7 @@ exports.compare = {
         var db = new sqlite3.Database('');
         var file = fs.readFileSync('benchmark/insert-transaction.sql', 'utf8');
         db.exec(file);
-        db.close(finished)
+        db.close(finished);
     },
 
     'insert with transaction and two statements': function(finished) {

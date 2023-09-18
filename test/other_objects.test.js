@@ -86,4 +86,29 @@ describe('data types', function() {
             });
         });
     });
+
+    it('should ignore faulty toString', function(done) {
+        const faulty = { toString: 23 };
+        db.run("INSERT INTO txt_table VALUES(?)", faulty, function (err) {
+            assert.notEqual(err, undefined);
+            done();
+        });
+    });
+
+    it('should ignore faulty toString in array', function(done) {
+        const faulty = [[{toString: null}], 1];
+        db.all('SELECT * FROM txt_table WHERE txt = ? LIMIT ?', faulty, function (err) {
+            assert.equal(err, null);
+            done();
+        });
+    });
+
+    it('should ignore faulty toString set to function', function(done) {
+        const faulty = [[{toString: function () {console.log('oh no');}}], 1];
+        db.all('SELECT * FROM txt_table WHERE txt = ? LIMIT ?', faulty, function (err) {
+            assert.equal(err, undefined);
+            done();
+        });
+    });
+
 });
