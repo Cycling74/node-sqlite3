@@ -72,7 +72,8 @@
     "node-gyp": "8.x"
   },
   "scripts": {
-    "build": "dotenv sh ./scripts/c74_build.sh",
+    "build": "node-pre-gyp build",
+    "publishbindings": "dotenv ./node_modules/.bin/node-pre-gyp publish",
     "prepublishOnly": "npm ls",
     "build:debug": "node-pre-gyp build --debug",
     "install": "node-pre-gyp install --fallback-to-build",
